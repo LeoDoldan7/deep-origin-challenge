@@ -1,5 +1,5 @@
-function App() {
-  return <div></div>;
-}
+import { UrlShortener } from '@/components/UrlShortener';
 
-export default App;
+export default function App() {
+  return <UrlShortener />;
+}

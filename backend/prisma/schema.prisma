@@ -6,3 +6,10 @@ datasource db {
 generator client {
   provider = "prisma-client-js"
 }
+
+model Url {
+  id          String   @id @default(uuid())
+  originalUrl String
+  shortCode   String   @unique
+  createdAt   DateTime @default(now())
+}

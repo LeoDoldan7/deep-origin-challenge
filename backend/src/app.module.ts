@@ -6,8 +6,9 @@ import { PrismaModule } from './prisma/prisma.module';
 import { GlobalConfigModule } from './config/config.module';
 import { UrlsModule } from './urls/urls.module';
 import { RedirectModule } from './redirect/redirect.module';
+import { AuthModule } from './auth/auth.module';
 
-@Module({ imports: [GlobalConfigModule, PrismaModule, UrlsModule, RedirectModule] })
+@Module({ imports: [GlobalConfigModule, PrismaModule, UrlsModule, RedirectModule, AuthModule] })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggerMiddleware).forRoutes('*');

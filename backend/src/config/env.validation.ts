@@ -6,6 +6,8 @@ export const envSchema = z.object({
   DATABASE_URL           : z.string().url().default('postgresql://postgres:postgres@localhost:5432/deep_origin'),
   BASE_URL               : z.string().url().default('http://localhost:8080'),
   FRONTEND_NOT_FOUND_URL : z.string().url().default('http://localhost:3000/not-found'),
+  JWT_SECRET             : z.string().min(8),
+  JWT_EXPIRES_IN         : z.string().default('1d'),
 
 });
 export type EnvVars = z.infer<typeof envSchema>;

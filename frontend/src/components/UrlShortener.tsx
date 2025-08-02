@@ -6,7 +6,6 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Check, Copy } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 export function UrlShortener() {
   const [url, setUrl] = useState('');
@@ -39,7 +38,7 @@ export function UrlShortener() {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center p-4">
+    <div className="h-full w-full flex items-center justify-center p-4">
       <Card className="w-full max-w-md px-6 py-8 shadow-md rounded-xl">
         <CardTitle className="text-2xl font-bold text-center mb-4">
           URL Shortener

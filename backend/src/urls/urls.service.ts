@@ -10,11 +10,12 @@ export class UrlsService {
     private readonly env: EnvService
   ) {}
 
-  async create(originalUrl: string) {
+  async create(originalUrl: string, userId: string) {
     const shortCode = generateShortCode();
     const url = await this.prisma.url.create({ data: {
       originalUrl,
       shortCode,
+      userId,
     } });
 
     return {

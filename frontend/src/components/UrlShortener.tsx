@@ -6,11 +6,14 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Check, Copy } from 'lucide-react';
+import { isValidUrl } from '@/lib/validators';
 
 export function UrlShortener() {
   const [url, setUrl] = useState('');
   const [copied, setCopied] = useState(false);
   const queryClient = useQueryClient();
+
+  const [error, setError] = useState('');
 
   const mutation = useMutation({
     mutationFn: async (originalUrl: string) => {
@@ -25,16 +28,24 @@ export function UrlShortener() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!mutation.isPending) {
-      setCopied(false);
-      mutation.mutate(url);
-    }
+    setCopied(false);
+    mutation.mutate(url);
   };
 
   const handleCopy = () => {
     if (mutation.data) {
       navigator.clipboard.writeText(mutation.data).then(() => setCopied(true));
     }
+  };
+
+  const onEnterURL = (value: string) => {
+    setUrl(value);
+    if (value && !isValidUrl(value)) {
+      setError('Please enter a valid URL');
+
+      return;
+    }
+    setError('');
   };
 
   return (
@@ -53,7 +64,7 @@ export function UrlShortener() {
                 id="url"
                 placeholder="https://example.com/foo/bar"
                 value={url}
-                onChange={(e) => setUrl(e.target.value)}
+                onChange={(e) => onEnterURL(e.target.value)}
                 disabled={mutation.isPending || !!mutation.data}
               />
             </div>
@@ -66,7 +77,7 @@ export function UrlShortener() {
               {mutation.isPending ? 'Shortening…' : 'Shorten'}
             </Button>
           </form>
-
+          {error && <p className="text-sm text-red-500">{error}</p>}
           {mutation.data && (
             <div className="mt-6 space-y-2">
               <p className="text-green-600 font-semibold text-sm">

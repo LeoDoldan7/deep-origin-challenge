@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "experimentalDecorators": true,   
+    "emitDecoratorMetadata": true,
+    "module": "commonjs" ,
+    "rootDir": "./src",
+    "sourceMap": true, 
+    "esModuleInterop": true ,
+    "forceConsistentCasingInFileNames": true ,
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "skipLibCheck": true,
+  },
+  "include": ["src"]
+}

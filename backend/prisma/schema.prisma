@@ -15,11 +15,19 @@ model User {
   createdAt DateTime @default(now())
 }
 
+model Visit {
+  id        String   @id @default(uuid())
+  urlId     String
+  url       Url      @relation(fields: [urlId], references: [id])
+  createdAt DateTime @default(now())
+}
+
 model Url {
   id          String   @id @default(uuid())
   originalUrl String
   shortCode   String   @unique
   userId      String?
   user        User?    @relation("UserUrls", fields: [userId], references: [id])
+  visits      Visit[]
   createdAt   DateTime @default(now())
 }

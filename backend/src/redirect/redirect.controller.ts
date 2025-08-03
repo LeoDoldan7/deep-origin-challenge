@@ -1,5 +1,5 @@
 import {
-  Controller, Get, Param, Redirect,
+  Controller, Get, Param,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { EnvService } from '../config/env.service';
@@ -14,9 +14,16 @@ export class RedirectController {
   @Get(':code')
   async handleRedirect(@Param('code') code: string) {
     const url = await this.prisma.url.findUnique({ where: { shortCode: code } });
+    if (!url) {
+      return {
+        url        : this.env.get('FRONTEND_NOT_FOUND_URL'),
+        statusCode : 302,
+      };
+    }
+    await this.prisma.visit.create({ data: { urlId: url.id } });
 
     return {
-      url        : url?.originalUrl || this.env.get('FRONTEND_NOT_FOUND_URL'),
+      url        : url.originalUrl,
       statusCode : 302,
     };
   }

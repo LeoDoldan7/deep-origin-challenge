@@ -12,7 +12,6 @@ export default function RedirectPage() {
     const fetchRedirectUrl = async () => {
       try {
         const res = await api.get(`/r/${code}`);
-        console.log('### response', res.data);
         const targetUrl = res.data?.url;
         if (targetUrl) {
           window.location.href = targetUrl;

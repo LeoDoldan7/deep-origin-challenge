@@ -25,10 +25,17 @@ export class UrlsService {
   }
 
   async findAllForUser(userId: string) {
-    return this.prisma.url.findMany({
+    const urls = await this.prisma.url.findMany({
       where   : { userId },
       orderBy : { createdAt: 'desc' },
+      include : { _count: { select: { visits: true } } },
     });
+
+    return urls.map((url) => ({
+      ...url,
+      visitCount : url._count.visits,
+      _count     : undefined,
+    }));
   }
 
   async remove(id: string, userId: string) {

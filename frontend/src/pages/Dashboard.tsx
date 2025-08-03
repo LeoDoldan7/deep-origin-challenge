@@ -102,6 +102,11 @@ export default function Dashboard() {
                     </a>
                   </p>
 
+                  <p>
+                    <span className="text-muted-foreground">Visits:</span>{' '}
+                    {url.visitCount ?? 0}
+                  </p>
+
                   {editingId === url.id && (
                     <form
                       className="flex items-center gap-2 mt-2"

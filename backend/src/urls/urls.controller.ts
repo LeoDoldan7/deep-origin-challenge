@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -15,13 +16,15 @@ import { EnvService } from '../config/env.service';
 import { JwtAuthGuard } from '../auth/auth.guard';
 import { AuthRequest } from '../auth/types/auth-request.interface';
 import { UpdateUrlDto } from './dto/update-url.dto';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Controller('urls')
 @UseGuards(JwtAuthGuard)
 export class UrlsController {
   constructor(
     private readonly urlsService: UrlsService,
-    private readonly env: EnvService
+    private readonly env: EnvService,
+    private readonly prisma: PrismaService
   ) {}
 
   @Post()
@@ -54,4 +57,18 @@ async update(
 
   return { shortUrl: `${this.env.get('FRONTEND_BASE_URL')}/r/${updated.shortCode}` };
 }
+
+@Get(':id/visits')
+  async getVisits(@Param('id') id: string, @Req() req: AuthRequest) {
+    const url = await this.prisma.url.findFirst({
+      where: {
+        id,
+        userId: req.user.userId,
+      },
+      include: { _count: { select: { visits: true } } },
+    });
+    if (!url) throw new NotFoundException();
+
+    return { count: url._count.visits };
+  }
 }

@@ -3,4 +3,5 @@ export interface Url {
   originalUrl: string;
   shortCode: string;
   createdAt: string;
+  visitCount: number;
 }

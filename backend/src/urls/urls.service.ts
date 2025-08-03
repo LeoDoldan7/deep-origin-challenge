@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { generateShortCode } from '../lib/short-code';
 import { EnvService } from '../config/env.service';
@@ -20,7 +20,7 @@ export class UrlsService {
 
     return {
       ...url,
-      shortUrl: `${this.env.get('BASE_URL')}/r/${shortCode}`,
+      shortUrl: `${this.env.get('FRONTEND_BASE_URL')}/r/${shortCode}`,
     };
   }
 
@@ -36,5 +36,17 @@ export class UrlsService {
       id,
       userId,
     } });
+  }
+
+  async update(id: string, userId: string, newSlug: string) {
+    const exists = await this.prisma.url.findUnique({ where: { shortCode: newSlug } });
+    if (exists) {
+      throw new BadRequestException('Slug already in use');
+    }
+
+    return this.prisma.url.update({
+      where : { id },
+      data  : { shortCode: newSlug },
+    });
   }
 }

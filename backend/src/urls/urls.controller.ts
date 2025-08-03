@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Req,
   UseGuards,
@@ -13,6 +14,7 @@ import { CreateUrlDto } from './dto/create-url.dto';
 import { EnvService } from '../config/env.service';
 import { JwtAuthGuard } from '../auth/auth.guard';
 import { AuthRequest } from '../auth/types/auth-request.interface';
+import { UpdateUrlDto } from './dto/update-url.dto';
 
 @Controller('urls')
 @UseGuards(JwtAuthGuard)
@@ -27,7 +29,7 @@ export class UrlsController {
     const userId = req.user.userId;
     const url = await this.urlsService.create(dto.originalUrl, userId);
 
-    return { shortUrl: `${this.env.get('BASE_URL')}/r/${url.shortCode}` };
+    return { shortUrl: `${this.env.get('FRONTEND_BASE_URL')}/r/${url.shortCode}` };
   }
 
   @Get()
@@ -41,4 +43,15 @@ export class UrlsController {
 
     return { message: 'Deleted' };
   }
+
+  @Patch(':id')
+async update(
+  @Param('id') id: string,
+  @Body() dto: UpdateUrlDto,
+  @Req() req: AuthRequest
+) {
+  const updated = await this.urlsService.update(id, req.user.userId, dto.shortCode);
+
+  return { shortUrl: `${this.env.get('FRONTEND_BASE_URL')}/r/${updated.shortCode}` };
+}
 }

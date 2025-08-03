@@ -4,17 +4,14 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Header } from '@/components/Header';
 import { toast } from 'react-toastify';
-
-interface Url {
-  id: string;
-  originalUrl: string;
-  shortCode: string;
-  createdAt: string;
-}
+import type { Url } from '@/types';
+import { Input } from '@/components/ui/input';
 
 export default function Dashboard() {
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [newSlug, setNewSlug] = useState('');
 
   const { data: urls, isLoading } = useQuery<Url[]>({
     queryKey: ['urls'],
@@ -22,6 +19,27 @@ export default function Dashboard() {
       const res = await api.get('/urls');
 
       return res.data;
+    },
+  });
+
+  const updateSlug = useMutation({
+    mutationFn: async ({
+      id,
+      shortCode,
+    }: {
+      id: string;
+      shortCode: string;
+    }) => {
+      await api.patch(`/urls/${id}`, { shortCode });
+    },
+    onSuccess: () => {
+      toast.success('Slug updated');
+      setEditingId(null);
+      setNewSlug('');
+      queryClient.invalidateQueries({ queryKey: ['urls'] });
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message || 'Failed to update slug');
     },
   });
 
@@ -58,7 +76,7 @@ export default function Dashboard() {
             {urls?.map((url) => (
               <li
                 key={url.id}
-                className="border rounded-md p-4 flex justify-between items-start text-sm"
+                className="border rounded-md p-4 flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-start text-sm"
               >
                 <div className="space-y-1 break-all">
                   <p>
@@ -83,15 +101,62 @@ export default function Dashboard() {
                       {window.location.origin}/r/{url.shortCode}
                     </a>
                   </p>
+
+                  {editingId === url.id && (
+                    <form
+                      className="flex items-center gap-2 mt-2"
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        if (!newSlug.trim()) return;
+                        updateSlug.mutate({ id: url.id, shortCode: newSlug });
+                      }}
+                    >
+                      <Input
+                        value={newSlug}
+                        onChange={(e) => setNewSlug(e.target.value)}
+                        placeholder="New slug"
+                        className="w-40"
+                      />
+                      <Button type="submit" size="sm">
+                        Save
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        type="button"
+                        size="sm"
+                        onClick={() => {
+                          setEditingId(null);
+                          setNewSlug('');
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    </form>
+                  )}
                 </div>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => deleteMutation.mutate(url.id)}
-                  disabled={loading}
-                >
-                  Delete
-                </Button>
+
+                {!editingId && (
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setEditingId(url.id);
+                        setNewSlug(url.shortCode);
+                      }}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => deleteMutation.mutate(url.id)}
+                      disabled={loading}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                )}
               </li>
             ))}
           </ul>

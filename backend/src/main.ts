@@ -1,18 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import {
-  Logger, RequestMethod, ValidationPipe,
-} from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.setGlobalPrefix('/api/v1', { exclude: [
-    {
-      path   : 'r/:code',
-      method : RequestMethod.GET,
-    },
-  ] }
-  );
+  app.setGlobalPrefix('/api/v1');
   const isDev = process.env.NODE_ENV === 'development'
   if (isDev) {
     app.enableCors({

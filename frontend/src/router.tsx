@@ -5,6 +5,7 @@ import { PrivateRoute } from './components/PrivateRoute';
 import { LoginForm } from './components/LoginForm';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
+import RedirectPage from './pages/RedirectPage';
 
 export const router = createBrowserRouter([
   {
@@ -15,6 +16,7 @@ export const router = createBrowserRouter([
       </PrivateRoute>
     ),
   },
+  { path: '/r/:code', element: <RedirectPage /> },
   {
     path: '/signup',
     element: <SignupForm />,

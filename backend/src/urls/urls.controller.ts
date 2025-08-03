@@ -1,6 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
+  Get,
+  Param,
   Post,
   Req,
   UseGuards,
@@ -25,5 +28,17 @@ export class UrlsController {
     const url = await this.urlsService.create(dto.originalUrl, userId);
 
     return { shortUrl: `${this.env.get('BASE_URL')}/r/${url.shortCode}` };
+  }
+
+  @Get()
+  async findAll(@Req() req: AuthRequest) {
+    return this.urlsService.findAllForUser(req.user.userId);
+  }
+
+@Delete(':id')
+  async remove(@Param('id') id: string, @Req() req: AuthRequest) {
+    await this.urlsService.remove(id, req.user.userId);
+
+    return { message: 'Deleted' };
   }
 }

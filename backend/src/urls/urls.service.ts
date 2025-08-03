@@ -23,4 +23,18 @@ export class UrlsService {
       shortUrl: `${this.env.get('BASE_URL')}/r/${shortCode}`,
     };
   }
+
+  async findAllForUser(userId: string) {
+    return this.prisma.url.findMany({
+      where   : { userId },
+      orderBy : { createdAt: 'desc' },
+    });
+  }
+
+  async remove(id: string, userId: string) {
+    return this.prisma.url.deleteMany({ where: {
+      id,
+      userId,
+    } });
+  }
 }

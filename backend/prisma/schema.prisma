@@ -4,7 +4,8 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+    binaryTargets = ["native", "linux-arm64-openssl-3.0.x"]
 }
 
 model User {
@@ -13,13 +14,8 @@ model User {
   password  String
   urls      Url[]    @relation("UserUrls")
   createdAt DateTime @default(now())
-}
 
-model Visit {
-  id        String   @id @default(uuid())
-  urlId     String
-  url       Url      @relation(fields: [urlId], references: [id])
-  createdAt DateTime @default(now())
+  @@map("user")
 }
 
 model Url {
@@ -30,4 +26,15 @@ model Url {
   user        User?    @relation("UserUrls", fields: [userId], references: [id])
   visits      Visit[]
   createdAt   DateTime @default(now())
+
+  @@map("url")
+}
+
+model Visit {
+  id        String   @id @default(uuid())
+  urlId     String
+  url       Url      @relation(fields: [urlId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@map("visit")
 }
